@@ -21,12 +21,26 @@ public class AppUser {
 	@Column(nullable = false)
 	private String passwordHash;
 
+	@Column(length = 256)
+	private String kdfSalt;
+
+	private Integer kdfIterations;
+
 	protected AppUser() {
 	}
 
 	public AppUser(String username, String passwordHash) {
 		this.username = username;
 		this.passwordHash = passwordHash;
+		this.kdfSalt = "";
+		this.kdfIterations = 0;
+	}
+
+	public AppUser(String username, String passwordHash, String kdfSalt, int kdfIterations) {
+		this.username = username;
+		this.passwordHash = passwordHash;
+		this.kdfSalt = kdfSalt;
+		this.kdfIterations = kdfIterations;
 	}
 
 	public Long getId() {
@@ -39,5 +53,13 @@ public class AppUser {
 
 	public String getPasswordHash() {
 		return passwordHash;
+	}
+
+	public String getKdfSalt() {
+		return kdfSalt;
+	}
+
+	public Integer getKdfIterations() {
+		return kdfIterations;
 	}
 }

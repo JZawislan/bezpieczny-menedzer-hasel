@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,14 +31,32 @@ public class AuthController {
 
 	@PostMapping("/auth/register")
 	@ResponseStatus(HttpStatus.CREATED)
-	public AuthResponse register(@Valid @RequestBody AuthRequest request) {
+	public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
 		String username = request.username().trim().toLowerCase();
 		if (users.existsByUsername(username)) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
 		}
+		if (request.kdfIterations() < 100_000) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "KDF iterations are too low");
+		}
 
-		AppUser user = users.save(new AppUser(username, passwordEncoder.encode(request.password())));
+		AppUser user = users.save(new AppUser(
+				username,
+				passwordEncoder.encode(request.password()),
+				request.kdfSalt(),
+				request.kdfIterations()));
 		return new AuthResponse(jwtService.createToken(user.getUsername()), user.getUsername());
+	}
+
+	@GetMapping("/auth/kdf/{username}")
+	public KdfResponse kdf(@PathVariable String username) {
+		AppUser user = users.findByUsername(username.trim().toLowerCase())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+		if (user.getKdfSalt() == null || user.getKdfSalt().isBlank() || user.getKdfIterations() == null
+				|| user.getKdfIterations() < 100_000) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "User was created before vault encryption setup");
+		}
+		return new KdfResponse(user.getUsername(), user.getKdfSalt(), user.getKdfIterations());
 	}
 
 	@PostMapping("/auth/login")
