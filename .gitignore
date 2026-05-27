@@ -1,0 +1,8 @@
+frontend/node_modules/
+frontend/dist/
+
+backend/target/
+backend/.m2/
+
+.env
+.env.local
