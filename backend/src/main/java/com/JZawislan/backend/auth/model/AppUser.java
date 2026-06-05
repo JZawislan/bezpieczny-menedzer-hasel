@@ -1,4 +1,4 @@
-package com.JZawislan.backend.auth;
+package com.JZawislan.backend.auth.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -85,3 +85,4 @@ public class AppUser {
 		this.kdfIterations = kdfIterations;
 	}
 }
+

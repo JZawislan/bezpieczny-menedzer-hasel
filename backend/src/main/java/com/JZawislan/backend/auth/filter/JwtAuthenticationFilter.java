@@ -1,4 +1,4 @@
-package com.JZawislan.backend.auth;
+package com.JZawislan.backend.auth.filter;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,6 +13,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.JZawislan.backend.auth.model.AuthenticatedUser;
+import com.JZawislan.backend.auth.service.JwtService;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -44,3 +47,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 }
+

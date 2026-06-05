@@ -3,7 +3,7 @@ package com.JZawislan.backend.vault;
 import java.util.List;
 import java.util.Optional;
 
-import com.JZawislan.backend.auth.AppUser;
+import com.JZawislan.backend.auth.model.AppUser;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

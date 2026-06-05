@@ -2,7 +2,7 @@ package com.JZawislan.backend.vault;
 
 import java.time.Instant;
 
-import com.JZawislan.backend.auth.AppUser;
+import com.JZawislan.backend.auth.model.AppUser;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

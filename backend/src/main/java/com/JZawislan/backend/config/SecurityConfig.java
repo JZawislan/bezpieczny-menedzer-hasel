@@ -2,7 +2,7 @@ package com.JZawislan.backend.config;
 
 import java.util.List;
 
-import com.JZawislan.backend.auth.JwtAuthenticationFilter;
+import com.JZawislan.backend.auth.filter.JwtAuthenticationFilter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

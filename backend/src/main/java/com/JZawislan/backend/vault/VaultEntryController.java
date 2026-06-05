@@ -2,8 +2,8 @@ package com.JZawislan.backend.vault;
 
 import java.util.List;
 
-import com.JZawislan.backend.auth.AppUser;
-import com.JZawislan.backend.auth.AppUserRepository;
+import com.JZawislan.backend.auth.model.AppUser;
+import com.JZawislan.backend.auth.repository.AppUserRepository;
 
 import jakarta.validation.Valid;
 
