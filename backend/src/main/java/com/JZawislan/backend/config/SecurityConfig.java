@@ -32,6 +32,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/auth/kdf/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+						.requestMatchers("/api/admin/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

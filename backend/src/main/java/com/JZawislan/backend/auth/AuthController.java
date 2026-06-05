@@ -40,12 +40,14 @@ public class AuthController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "KDF iterations are too low");
 		}
 
+		UserRole role = users.existsByRole(UserRole.ADMIN) ? UserRole.USER : UserRole.ADMIN;
 		AppUser user = users.save(new AppUser(
 				username,
 				passwordEncoder.encode(request.password()),
 				request.kdfSalt(),
-				request.kdfIterations()));
-		return new AuthResponse(jwtService.createToken(user.getUsername()), user.getUsername());
+				request.kdfIterations(),
+				role));
+		return new AuthResponse(jwtService.createToken(user.getUsername(), user.getRole()), user.getUsername(), user.getRole());
 	}
 
 	@GetMapping("/auth/kdf/{username}")
@@ -69,11 +71,15 @@ public class AuthController {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
 		}
 
-		return new AuthResponse(jwtService.createToken(user.getUsername()), user.getUsername());
+		return new AuthResponse(jwtService.createToken(user.getUsername(), user.getRole()), user.getUsername(), user.getRole());
 	}
 
 	@GetMapping("/me")
 	public Map<String, String> me(org.springframework.security.core.Authentication authentication) {
-		return Map.of("username", authentication.getName());
+		String role = authentication.getAuthorities().stream()
+				.findFirst()
+				.map(authority -> authority.getAuthority().replace("ROLE_", ""))
+				.orElse(UserRole.USER.name());
+		return Map.of("username", authentication.getName(), "role", role);
 	}
 }

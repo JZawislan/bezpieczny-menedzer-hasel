@@ -139,6 +139,56 @@ button:disabled {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.admin-panel {
+  border: 1px solid #d8e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.section-heading {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.section-heading h2,
+.user-row h3 {
+  color: #111827;
+  margin: 0;
+}
+
+.section-heading h2 {
+  font-size: 22px;
+}
+
+.user-row h3 {
+  font-size: 18px;
+}
+
+.users-list {
+  display: grid;
+  gap: 12px;
+}
+
+.user-row {
+  align-items: end;
+  border: 1px solid #d8e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 240px) auto;
+  padding: 14px;
+}
+
+.user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .full-row {
   grid-column: 1 / -1;
 }
@@ -217,6 +267,15 @@ dd {
 
   .manager-header {
     display: grid;
+  }
+
+  .section-heading,
+  .user-row {
+    display: grid;
+  }
+
+  .user-row {
+    grid-template-columns: 1fr;
   }
 
   .vault-form {

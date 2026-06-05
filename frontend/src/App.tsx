@@ -7,9 +7,12 @@ const KDF_ITERATIONS = 210_000
 const AUTH_PURPOSE = 'bezpieczny-menedzer:auth'
 const VAULT_PURPOSE = 'bezpieczny-menedzer:vault'
 
+type UserRole = 'USER' | 'ADMIN'
+
 type AuthResponse = {
   token: string
   username: string
+  role: UserRole
 }
 
 type KdfResponse = {
@@ -36,6 +39,13 @@ type DecryptedVaultEntry = VaultEntryResponse & {
   password: string
   notes: string
   failedToDecrypt?: boolean
+}
+
+type AdminUser = {
+  id: number
+  username: string
+  role: UserRole
+  vaultEntriesCount: number
 }
 
 type VaultForm = {
@@ -131,8 +141,11 @@ function App() {
   const [masterPassword, setMasterPassword] = useState('')
   const [token, setToken] = useState('')
   const [currentUser, setCurrentUser] = useState('')
+  const [currentRole, setCurrentRole] = useState<UserRole>('USER')
   const [vaultKey, setVaultKey] = useState<CryptoKey | null>(null)
   const [entries, setEntries] = useState<DecryptedVaultEntry[]>([])
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([])
+  const [resetPasswords, setResetPasswords] = useState<Record<number, string>>({})
   const [form, setForm] = useState<VaultForm>(emptyVaultForm)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [visiblePasswords, setVisiblePasswords] = useState<Set<number>>(() => new Set())
@@ -140,6 +153,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
 
   const isAuthenticated = Boolean(token && currentUser && vaultKey)
+  const isAdmin = currentRole === 'ADMIN'
 
   const sortedEntries = useMemo(
     () => [...entries].sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt)),
@@ -152,7 +166,10 @@ function App() {
     }
 
     loadVault()
-  }, [isAuthenticated])
+    if (isAdmin) {
+      loadAdminUsers()
+    }
+  }, [isAuthenticated, isAdmin])
 
   async function requestJson<T>(path: string, init: RequestInit = {}) {
     const response = await fetch(`${API_URL}${path}`, {
@@ -217,9 +234,14 @@ function App() {
       const data = (await response.json()) as AuthResponse
       setToken(data.token)
       setCurrentUser(data.username)
+      setCurrentRole(data.role)
       setVaultKey(await deriveVaultKey(masterPassword, kdf.kdfSalt, kdf.kdfIterations))
       setMasterPassword('')
-      setMessage(mode === 'login' ? 'Zalogowano i odblokowano sejf.' : 'Konto utworzone i sejf odblokowany.')
+      setMessage(
+        mode === 'login'
+          ? 'Zalogowano i odblokowano sejf.'
+          : `Konto utworzone i sejf odblokowany. Rola: ${data.role}.`,
+      )
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Wystapil blad.')
     } finally {
@@ -247,6 +269,62 @@ function App() {
       setEntries(decryptedEntries)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Nie udalo sie pobrac sejfu.')
+    }
+  }
+
+  async function loadAdminUsers() {
+    try {
+      setAdminUsers(await requestJson<AdminUser[]>('/admin/users'))
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Nie udalo sie pobrac listy uzytkownikow.')
+    }
+  }
+
+  async function deleteUser(user: AdminUser) {
+    if (!confirm(`Usunac konto ${user.username}? Tej operacji nie mozna cofnac.`)) {
+      return
+    }
+
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      await requestJson<void>(`/admin/users/${user.id}`, { method: 'DELETE' })
+      setAdminUsers((current) => current.filter((item) => item.id !== user.id))
+      setMessage(`Konto ${user.username} zostalo usuniete.`)
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Nie udalo sie usunac konta.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function resetUserPassword(user: AdminUser) {
+    const temporaryPassword = resetPasswords[user.id]?.trim() ?? ''
+    if (temporaryPassword.length < 8) {
+      setMessage('Haslo tymczasowe musi miec co najmniej 8 znakow.')
+      return
+    }
+
+    if (!confirm(`Zresetowac haslo konta ${user.username}? Sejf tego uzytkownika zostanie wyczyszczony.`)) {
+      return
+    }
+
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      const updatedUser = await requestJson<AdminUser>(`/admin/users/${user.id}/reset-password`, {
+        method: 'POST',
+        body: JSON.stringify({ temporaryPassword }),
+      })
+      setAdminUsers((current) => current.map((item) => (item.id === user.id ? updatedUser : item)))
+      setResetPasswords((current) => ({ ...current, [user.id]: '' }))
+      setMessage(`Haslo konta ${user.username} zostalo zresetowane, a sejf wyczyszczony.`)
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Nie udalo sie zresetowac hasla.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -319,8 +397,11 @@ function App() {
   function logout() {
     setToken('')
     setCurrentUser('')
+    setCurrentRole('USER')
     setVaultKey(null)
     setEntries([])
+    setAdminUsers([])
+    setResetPasswords({})
     setForm(emptyVaultForm)
     setEditingId(null)
     setVisiblePasswords(new Set())
@@ -347,12 +428,74 @@ function App() {
             <div>
               <p className="eyebrow">Bezpieczny menedzer hasel</p>
               <h1>Sejf: {currentUser}</h1>
-              <p className="muted">Backend przechowuje tylko zaszyfrowane wpisy. Odszyfrowanie dzieje sie w React.</p>
+              <p className="muted">
+                Backend przechowuje tylko zaszyfrowane wpisy. Odszyfrowanie dzieje sie w React.
+                {isAdmin ? ' Masz aktywne uprawnienia administratora.' : ''}
+              </p>
             </div>
             <button type="button" className="secondary-button" onClick={logout}>
               Wyloguj
             </button>
           </header>
+
+          {isAdmin && (
+            <section className="admin-panel" aria-label="Panel administratora">
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">Administracja</p>
+                  <h2>Konta uzytkownikow</h2>
+                </div>
+                <button className="secondary-button" disabled={isLoading} onClick={loadAdminUsers} type="button">
+                  Odswiez
+                </button>
+              </div>
+
+              <div className="users-list">
+                {adminUsers.map((user) => (
+                  <article className="user-row" key={user.id}>
+                    <div>
+                      <h3>{user.username}</h3>
+                      <p className="muted">
+                        Rola: {user.role} | wpisy w sejfie: {user.vaultEntriesCount}
+                      </p>
+                    </div>
+                    <label>
+                      Haslo tymczasowe
+                      <input
+                        autoComplete="new-password"
+                        disabled={user.username === currentUser}
+                        minLength={8}
+                        onChange={(event) =>
+                          setResetPasswords((current) => ({ ...current, [user.id]: event.target.value }))
+                        }
+                        placeholder="min. 8 znakow"
+                        type="password"
+                        value={resetPasswords[user.id] ?? ''}
+                      />
+                    </label>
+                    <div className="user-actions">
+                      <button
+                        className="secondary-button"
+                        disabled={isLoading || user.username === currentUser}
+                        onClick={() => resetUserPassword(user)}
+                        type="button"
+                      >
+                        Resetuj haslo
+                      </button>
+                      <button
+                        className="danger-button"
+                        disabled={isLoading || user.username === currentUser}
+                        onClick={() => deleteUser(user)}
+                        type="button"
+                      >
+                        Usun konto
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
 
           <form className="vault-form" onSubmit={saveEntry}>
             <label>

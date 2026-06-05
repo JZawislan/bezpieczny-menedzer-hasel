@@ -34,11 +34,12 @@ public class JwtService {
 		this.expirationSeconds = expirationSeconds;
 	}
 
-	public String createToken(String username) {
+	public String createToken(String username, UserRole role) {
 		try {
 			Instant now = Instant.now();
 			JWTClaimsSet claims = new JWTClaimsSet.Builder()
 					.subject(username)
+					.claim("role", role.name())
 					.issueTime(Date.from(now))
 					.expirationTime(Date.from(now.plusSeconds(expirationSeconds)))
 					.build();
@@ -51,7 +52,7 @@ public class JwtService {
 		}
 	}
 
-	public String validateAndGetUsername(String token) {
+	public AuthenticatedUser validateAndGetUser(String token) {
 		try {
 			SignedJWT signedJwt = SignedJWT.parse(token);
 			if (!signedJwt.verify(new MACVerifier(secret.getBytes(StandardCharsets.UTF_8)))) {
@@ -75,7 +76,13 @@ public class JwtService {
 				return null;
 			}
 
-			return username;
+			UserRole role = UserRole.USER;
+			Object roleClaim = claims.getClaim("role");
+			if (roleClaim instanceof String roleValue) {
+				role = UserRole.valueOf(roleValue);
+			}
+
+			return new AuthenticatedUser(username, role);
 		} catch (Exception exception) {
 			return null;
 		}

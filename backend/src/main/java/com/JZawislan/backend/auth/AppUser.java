@@ -2,6 +2,8 @@ package com.JZawislan.backend.auth;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,6 +28,10 @@ public class AppUser {
 
 	private Integer kdfIterations;
 
+	@Enumerated(EnumType.STRING)
+	@Column(length = 20)
+	private UserRole role = UserRole.USER;
+
 	protected AppUser() {
 	}
 
@@ -34,13 +40,19 @@ public class AppUser {
 		this.passwordHash = passwordHash;
 		this.kdfSalt = "";
 		this.kdfIterations = 0;
+		this.role = UserRole.USER;
 	}
 
 	public AppUser(String username, String passwordHash, String kdfSalt, int kdfIterations) {
+		this(username, passwordHash, kdfSalt, kdfIterations, UserRole.USER);
+	}
+
+	public AppUser(String username, String passwordHash, String kdfSalt, int kdfIterations, UserRole role) {
 		this.username = username;
 		this.passwordHash = passwordHash;
 		this.kdfSalt = kdfSalt;
 		this.kdfIterations = kdfIterations;
+		this.role = role;
 	}
 
 	public Long getId() {
@@ -61,5 +73,15 @@ public class AppUser {
 
 	public Integer getKdfIterations() {
 		return kdfIterations;
+	}
+
+	public UserRole getRole() {
+		return role == null ? UserRole.USER : role;
+	}
+
+	public void resetPassword(String passwordHash, String kdfSalt, int kdfIterations) {
+		this.passwordHash = passwordHash;
+		this.kdfSalt = kdfSalt;
+		this.kdfIterations = kdfIterations;
 	}
 }
