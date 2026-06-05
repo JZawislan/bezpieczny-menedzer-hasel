@@ -5,31 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cdf48b94-d29e-40c0-a5c7-40187bd570d4" name="Changes" comment="created modules and separated functionalities">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/AuthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/AuthRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/AuthResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/KdfResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/RegisterRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/filter/JwtAuthenticationFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/AppUser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/AuthenticatedUser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/UserRole.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/AuthService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/ClientKdfService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/JwtService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/AppUser.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/AppUserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/AppUserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/AuthController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/AuthRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/AuthResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/JwtAuthenticationFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/JwtService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/KdfResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/RegisterRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/AuthService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/vault/VaultEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/vault/VaultEntry.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/vault/VaultEntryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/vault/VaultEntryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/vault/VaultEntryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/vault/VaultEntryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +20,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="da287de1-2dbc-4fe9-9437-89fb00aba8bd" />
+        <option name="activeSessionId" value="39a4b7e8-2dd2-4d52-b924-278f33771416" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -66,6 +47,14 @@
             <option name="modelValue" value="auto" />
             <option name="targetType" value="LOCAL" />
           </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="39a4b7e8-2dd2-4d52-b924-278f33771416" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
         </option>
         <option name="type" value="PANEL" />
       </chat>
@@ -74,6 +63,7 @@
   <component name="CopilotPersistence">
     <persistenceIdMap>
       <entry key="_C:/Users/rkacp/IdeaProjects/bezpieczny-menedzer-hasel" value="3EJk3azlcGP1rxSrXmqyIJ13VTz" />
+      <entry key="_C:/Users/rkacp/IdeaProjects/bezpieczny-menedzer-hasel/backend" value="3EitXVHNua53wRmMpFaZMkHIrq8" />
     </persistenceIdMap>
   </component>
   <component name="CopilotUserSelectedModel">
@@ -89,6 +79,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -146,7 +137,7 @@
     "Spring Boot.BackendApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "testowa",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/rkacp/IdeaProjects/Pizza-net/order-service",
@@ -182,6 +173,7 @@
       <workItem from="1780663986508" duration="4506000" />
       <workItem from="1780668708734" duration="162000" />
       <workItem from="1780668981966" duration="1115000" />
+      <workItem from="1780673263035" duration="1028000" />
     </task>
     <task id="LOCAL-00001" summary="Add admin panel functionality and user role management">
       <option name="closed" value="true" />

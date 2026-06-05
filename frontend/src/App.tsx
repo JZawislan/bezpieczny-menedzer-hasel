@@ -6,6 +6,7 @@ const API_URL = 'http://localhost:8080/api'
 const KDF_ITERATIONS = 210_000
 const AUTH_PURPOSE = 'bezpieczny-menedzer:auth'
 const VAULT_PURPOSE = 'bezpieczny-menedzer:vault'
+const SESSION_STORAGE_KEY = 'bezpieczny-menedzer-session'
 
 type UserRole = 'USER' | 'ADMIN'
 
@@ -13,6 +14,11 @@ type AuthResponse = {
   token: string
   username: string
   role: UserRole
+}
+
+type StoredSession = AuthResponse & {
+  kdfSalt?: string
+  kdfIterations?: number
 }
 
 type KdfResponse = {
@@ -66,6 +72,20 @@ const emptyVaultForm: VaultForm = {
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
+
+function readStoredSession() {
+  const rawSession = localStorage.getItem(SESSION_STORAGE_KEY)
+  if (!rawSession) {
+    return null
+  }
+
+  try {
+    return JSON.parse(rawSession) as StoredSession
+  } catch {
+    localStorage.removeItem(SESSION_STORAGE_KEY)
+    return null
+  }
+}
 
 function bytesToBase64(bytes: Uint8Array) {
   let binary = ''
@@ -137,22 +157,28 @@ async function decryptVaultPayload(vaultKey: CryptoKey, entry: VaultEntryRespons
 }
 
 function App() {
+  const [storedSession] = useState<StoredSession | null>(() => readStoredSession())
   const [username, setUsername] = useState('')
   const [masterPassword, setMasterPassword] = useState('')
-  const [token, setToken] = useState('')
-  const [currentUser, setCurrentUser] = useState('')
-  const [currentRole, setCurrentRole] = useState<UserRole>('USER')
+  const [token, setToken] = useState(storedSession?.token ?? '')
+  const [currentUser, setCurrentUser] = useState(storedSession?.username ?? '')
+  const [currentRole, setCurrentRole] = useState<UserRole>(storedSession?.role ?? 'USER')
+  const [currentKdfSalt, setCurrentKdfSalt] = useState(storedSession?.kdfSalt ?? '')
+  const [currentKdfIterations, setCurrentKdfIterations] = useState(storedSession?.kdfIterations ?? KDF_ITERATIONS)
   const [vaultKey, setVaultKey] = useState<CryptoKey | null>(null)
   const [entries, setEntries] = useState<DecryptedVaultEntry[]>([])
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([])
   const [resetPasswords, setResetPasswords] = useState<Record<number, string>>({})
+  const [currentPasswordForChange, setCurrentPasswordForChange] = useState('')
+  const [newMasterPassword, setNewMasterPassword] = useState('')
   const [form, setForm] = useState<VaultForm>(emptyVaultForm)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [visiblePasswords, setVisiblePasswords] = useState<Set<number>>(() => new Set())
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const isAuthenticated = Boolean(token && currentUser && vaultKey)
+  const hasSession = Boolean(token && currentUser)
+  const isVaultUnlocked = Boolean(vaultKey)
   const isAdmin = currentRole === 'ADMIN'
 
   const sortedEntries = useMemo(
@@ -161,15 +187,22 @@ function App() {
   )
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!hasSession) {
+      return
+    }
+
+    if (isAdmin) {
+      loadAdminUsers()
+    }
+  }, [hasSession, isAdmin])
+
+  useEffect(() => {
+    if (!hasSession || !isVaultUnlocked) {
       return
     }
 
     loadVault()
-    if (isAdmin) {
-      loadAdminUsers()
-    }
-  }, [isAuthenticated, isAdmin])
+  }, [hasSession, isVaultUnlocked])
 
   async function requestJson<T>(path: string, init: RequestInit = {}) {
     const response = await fetch(`${API_URL}${path}`, {
@@ -198,6 +231,12 @@ function App() {
 
     try {
       const normalizedUsername = username.trim().toLowerCase()
+      if (normalizedUsername.length < 3) {
+        throw new Error('Login musi miec co najmniej 3 znaki.')
+      }
+      if (masterPassword.length < 8) {
+        throw new Error('Haslo glowne musi miec co najmniej 8 znakow.')
+      }
       const kdf =
         mode === 'register'
           ? {
@@ -232,9 +271,12 @@ function App() {
       }
 
       const data = (await response.json()) as AuthResponse
-      setToken(data.token)
-      setCurrentUser(data.username)
-      setCurrentRole(data.role)
+      const session = {
+        ...data,
+        kdfSalt: kdf.kdfSalt,
+        kdfIterations: kdf.kdfIterations,
+      }
+      saveSession(session)
       setVaultKey(await deriveVaultKey(masterPassword, kdf.kdfSalt, kdf.kdfIterations))
       setMasterPassword('')
       setMessage(
@@ -247,6 +289,53 @@ function App() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  async function unlockVault(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      if (masterPassword.length < 8) {
+        throw new Error('Haslo glowne musi miec co najmniej 8 znakow.')
+      }
+      const kdf =
+        currentKdfSalt && currentKdfIterations
+          ? { username: currentUser, kdfSalt: currentKdfSalt, kdfIterations: currentKdfIterations }
+          : await requestJson<KdfResponse>(`/auth/kdf/${encodeURIComponent(currentUser)}`, { headers: {} })
+      const authHash = await deriveAuthHash(masterPassword, kdf.kdfSalt, kdf.kdfIterations)
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: currentUser, password: authHash }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Nieprawidlowe haslo glowne.')
+      }
+
+      const data = (await response.json()) as AuthResponse
+      saveSession({ ...data, kdfSalt: kdf.kdfSalt, kdfIterations: kdf.kdfIterations })
+      setVaultKey(await deriveVaultKey(masterPassword, kdf.kdfSalt, kdf.kdfIterations))
+      setMasterPassword('')
+      setMessage('Sejf odblokowany.')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Nie udalo sie odblokowac sejfu.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  function saveSession(session: StoredSession) {
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session))
+    setToken(session.token)
+    setCurrentUser(session.username)
+    setCurrentRole(session.role)
+    setCurrentKdfSalt(session.kdfSalt ?? '')
+    setCurrentKdfIterations(session.kdfIterations ?? KDF_ITERATIONS)
   }
 
   async function loadVault() {
@@ -314,15 +403,87 @@ function App() {
     setMessage('')
 
     try {
+      const kdfSalt = bytesToBase64(crypto.getRandomValues(new Uint8Array(16)))
+      const password = await deriveAuthHash(temporaryPassword, kdfSalt, KDF_ITERATIONS)
       const updatedUser = await requestJson<AdminUser>(`/admin/users/${user.id}/reset-password`, {
         method: 'POST',
-        body: JSON.stringify({ temporaryPassword }),
+        body: JSON.stringify({ password, kdfSalt, kdfIterations: KDF_ITERATIONS }),
       })
       setAdminUsers((current) => current.map((item) => (item.id === user.id ? updatedUser : item)))
       setResetPasswords((current) => ({ ...current, [user.id]: '' }))
       setMessage(`Haslo konta ${user.username} zostalo zresetowane, a sejf wyczyszczony.`)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Nie udalo sie zresetowac hasla.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function changeOwnPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!vaultKey) {
+      return
+    }
+    if (currentPasswordForChange.length < 8 || newMasterPassword.length < 8) {
+      setMessage('Obecne i nowe haslo glowne musza miec co najmniej 8 znakow.')
+      return
+    }
+    if (entries.some((entry) => entry.failedToDecrypt)) {
+      setMessage('Najpierw odblokuj wszystkie wpisy poprawnym haslem, zeby zmienic haslo glowne.')
+      return
+    }
+
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      const oldKdf =
+        currentKdfSalt && currentKdfIterations
+          ? { username: currentUser, kdfSalt: currentKdfSalt, kdfIterations: currentKdfIterations }
+          : await requestJson<KdfResponse>(`/auth/kdf/${encodeURIComponent(currentUser)}`, { headers: {} })
+      const newKdfSalt = bytesToBase64(crypto.getRandomValues(new Uint8Array(16)))
+      const currentPassword = await deriveAuthHash(currentPasswordForChange, oldKdf.kdfSalt, oldKdf.kdfIterations)
+      const newPassword = await deriveAuthHash(newMasterPassword, newKdfSalt, KDF_ITERATIONS)
+      const newVaultKey = await deriveVaultKey(newMasterPassword, newKdfSalt, KDF_ITERATIONS)
+
+      const data = await requestJson<AuthResponse>('/auth/change-password', {
+        method: 'POST',
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          kdfSalt: newKdfSalt,
+          kdfIterations: KDF_ITERATIONS,
+        }),
+      })
+
+      await Promise.all(
+        entries.map(async (entry) => {
+          const encrypted = await encryptVaultPayload(newVaultKey, {
+            site: entry.site,
+            login: entry.login,
+            password: entry.password,
+            notes: entry.notes,
+          })
+          return requestJson<VaultEntryResponse>(`/vault/${entry.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+              label: entry.label,
+              ...encrypted,
+              algorithm: 'AES-GCM-256',
+              kdf: 'PBKDF2-SHA256',
+              kdfIterations: KDF_ITERATIONS,
+            }),
+          })
+        }),
+      )
+
+      saveSession({ ...data, kdfSalt: newKdfSalt, kdfIterations: KDF_ITERATIONS })
+      setVaultKey(newVaultKey)
+      setCurrentPasswordForChange('')
+      setNewMasterPassword('')
+      setMessage('Haslo glowne zostalo zmienione, a wpisy przepisane na nowy klucz.')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Nie udalo sie zmienic hasla glownego.')
     } finally {
       setIsLoading(false)
     }
@@ -395,13 +556,18 @@ function App() {
   }
 
   function logout() {
+    localStorage.removeItem(SESSION_STORAGE_KEY)
     setToken('')
     setCurrentUser('')
     setCurrentRole('USER')
+    setCurrentKdfSalt('')
+    setCurrentKdfIterations(KDF_ITERATIONS)
     setVaultKey(null)
     setEntries([])
     setAdminUsers([])
     setResetPasswords({})
+    setCurrentPasswordForChange('')
+    setNewMasterPassword('')
     setForm(emptyVaultForm)
     setEditingId(null)
     setVisiblePasswords(new Set())
@@ -420,7 +586,7 @@ function App() {
     })
   }
 
-  if (isAuthenticated) {
+  if (hasSession) {
     return (
       <main className="app-shell vault-shell">
         <section className="manager-panel">
@@ -497,6 +663,29 @@ function App() {
             </section>
           )}
 
+          {!isVaultUnlocked ? (
+            <form className="unlock-panel" onSubmit={unlockVault}>
+              <div>
+                <h2>Odblokuj sejf</h2>
+                <p className="muted">Sesja zostala przywrocona. Wpisz haslo glowne, zeby odszyfrowac wpisy.</p>
+              </div>
+              <label>
+                Haslo glowne
+                <input
+                  autoComplete="current-password"
+                  minLength={8}
+                  onChange={(event) => setMasterPassword(event.target.value)}
+                  required
+                  type="password"
+                  value={masterPassword}
+                />
+              </label>
+              <button disabled={isLoading} type="submit">
+                Odblokuj
+              </button>
+            </form>
+          ) : (
+            <>
           <form className="vault-form" onSubmit={saveEntry}>
             <label>
               Nazwa wpisu
@@ -565,6 +754,40 @@ function App() {
             </div>
           </form>
 
+          <form className="password-reset-panel" onSubmit={changeOwnPassword}>
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">Konto</p>
+                <h2>Reset hasla glownego</h2>
+              </div>
+            </div>
+            <label>
+              Obecne haslo glowne
+              <input
+                autoComplete="current-password"
+                minLength={8}
+                onChange={(event) => setCurrentPasswordForChange(event.target.value)}
+                required
+                type="password"
+                value={currentPasswordForChange}
+              />
+            </label>
+            <label>
+              Nowe haslo glowne
+              <input
+                autoComplete="new-password"
+                minLength={8}
+                onChange={(event) => setNewMasterPassword(event.target.value)}
+                required
+                type="password"
+                value={newMasterPassword}
+              />
+            </label>
+            <button disabled={isLoading} type="submit">
+              Zmien haslo
+            </button>
+          </form>
+
           <section className="entries-list" aria-label="Zapisane hasla">
             {sortedEntries.length === 0 ? (
               <p className="empty-state">Brak wpisow. Dodaj pierwsze haslo, zeby sprawdzic szyfrowany zapis.</p>
@@ -610,6 +833,8 @@ function App() {
               ))
             )}
           </section>
+            </>
+          )}
 
           {message && <p className="status">{message}</p>}
         </section>

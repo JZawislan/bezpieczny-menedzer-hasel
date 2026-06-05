@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.JZawislan.backend.auth.dto.AuthRequest;
 import com.JZawislan.backend.auth.dto.AuthResponse;
+import com.JZawislan.backend.auth.dto.ChangePasswordRequest;
 import com.JZawislan.backend.auth.dto.KdfResponse;
 import com.JZawislan.backend.auth.dto.RegisterRequest;
-import com.JZawislan.backend.auth.model.UserRole;
 import com.JZawislan.backend.auth.service.AuthService;
 
 @RestController
@@ -42,6 +42,11 @@ public class AuthController {
 	@PostMapping("/auth/login")
 	public AuthResponse login(@Valid @RequestBody AuthRequest request) {
 		return authService.login(request);
+	}
+
+	@PostMapping("/auth/change-password")
+	public AuthResponse changePassword(Authentication authentication, @Valid @RequestBody ChangePasswordRequest request) {
+		return authService.changePassword(authentication, request);
 	}
 
 	@GetMapping("/me")

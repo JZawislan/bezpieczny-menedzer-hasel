@@ -147,6 +147,23 @@ button:disabled {
   padding: 18px;
 }
 
+.unlock-panel,
+.password-reset-panel {
+  border: 1px solid #d8e0e7;
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.password-reset-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+}
+
+.password-reset-panel .section-heading {
+  grid-column: 1 / -1;
+}
+
 .section-heading {
   align-items: center;
   display: flex;
@@ -279,6 +296,10 @@ dd {
   }
 
   .vault-form {
+    grid-template-columns: 1fr;
+  }
+
+  .password-reset-panel {
     grid-template-columns: 1fr;
   }
 }
