@@ -13,6 +13,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 	boolean existsByUsername(String username);
 
+	boolean existsByEmail(String email);
+
 	boolean existsByRole(UserRole role);
 
 	Optional<AppUser> findByUsername(String username);
@@ -20,7 +22,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     @Transactional
     @Modifying
-    @Query("update AppUser u set u.passwordHash = ?2 where u.username = ?1")
+    @Query("update AppUser u set u.passwordHash = ?2 where u.email = ?1")
     void updatePassword(String email, String password);
 }
 

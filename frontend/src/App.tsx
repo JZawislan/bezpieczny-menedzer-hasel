@@ -159,7 +159,14 @@ async function decryptVaultPayload(vaultKey: CryptoKey, entry: VaultEntryRespons
 function App() {
   const [storedSession] = useState<StoredSession | null>(() => readStoredSession())
   const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [masterPassword, setMasterPassword] = useState('')
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
+  const [resetOtp, setResetOtp] = useState('')
+  const [resetOtpVerified, setResetOtpVerified] = useState(false)
+  const [resetMasterPassword, setResetMasterPassword] = useState('')
+  const [resetMasterPasswordRepeat, setResetMasterPasswordRepeat] = useState('')
   const [token, setToken] = useState(storedSession?.token ?? '')
   const [currentUser, setCurrentUser] = useState(storedSession?.username ?? '')
   const [currentRole, setCurrentRole] = useState<UserRole>(storedSession?.role ?? 'USER')
@@ -225,14 +232,35 @@ function App() {
     return (await response.json()) as T
   }
 
+  async function requestText(path: string, init: RequestInit = {}) {
+    const response = await fetch(`${API_URL}${path}`, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...init.headers,
+      },
+    })
+
+    const text = await response.text()
+    if (!response.ok) {
+      throw new Error(text || 'Operacja nie powiodla sie.')
+    }
+    return text
+  }
+
   async function submitAuth(mode: 'login' | 'register') {
     setIsLoading(true)
     setMessage('')
 
     try {
       const normalizedUsername = username.trim().toLowerCase()
+      const normalizedEmail = email.trim().toLowerCase()
       if (normalizedUsername.length < 3) {
         throw new Error('Login musi miec co najmniej 3 znaki.')
+      }
+      if (mode === 'register' && !normalizedEmail.includes('@')) {
+        throw new Error('Podaj poprawny adres e-mail do odzyskiwania hasla.')
       }
       if (masterPassword.length < 8) {
         throw new Error('Haslo glowne musi miec co najmniej 8 znakow.')
@@ -258,6 +286,7 @@ function App() {
           mode === 'register'
             ? {
                 username: normalizedUsername,
+                email: normalizedEmail,
                 password: authHash,
                 kdfSalt: kdf.kdfSalt,
                 kdfIterations: kdf.kdfIterations,
@@ -279,6 +308,7 @@ function App() {
       saveSession(session)
       setVaultKey(await deriveVaultKey(masterPassword, kdf.kdfSalt, kdf.kdfIterations))
       setMasterPassword('')
+      setEmail('')
       setMessage(
         mode === 'login'
           ? 'Zalogowano i odblokowano sejf.'
@@ -286,6 +316,96 @@ function App() {
       )
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Wystapil blad.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function sendResetOtp(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      const normalizedEmail = resetEmail.trim().toLowerCase()
+      if (!normalizedEmail.includes('@')) {
+        throw new Error('Podaj poprawny adres e-mail.')
+      }
+      const text = await requestText(`/auth/forgot-password/verifyMail/${encodeURIComponent(normalizedEmail)}`, {
+        method: 'POST',
+      })
+      setResetOtp('')
+      setResetOtpVerified(false)
+      setMessage(text)
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Nie udalo sie wyslac maila z kodem.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function verifyResetOtp() {
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      const normalizedEmail = resetEmail.trim().toLowerCase()
+      if (!/^\d{6}$/.test(resetOtp.trim())) {
+        throw new Error('Kod OTP musi miec 6 cyfr.')
+      }
+      const text = await requestText(
+        `/auth/forgot-password/verifyOtp/${encodeURIComponent(resetOtp.trim())}/${encodeURIComponent(normalizedEmail)}`,
+        { method: 'POST' },
+      )
+      setResetOtpVerified(true)
+      setMessage(text)
+    } catch (error) {
+      setResetOtpVerified(false)
+      setMessage(error instanceof Error ? error.message : 'Nie udalo sie zweryfikowac kodu OTP.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function finishForgotPassword() {
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      const normalizedEmail = resetEmail.trim().toLowerCase()
+      if (!resetOtpVerified) {
+        throw new Error('Najpierw zweryfikuj kod OTP.')
+      }
+      if (resetMasterPassword.length < 8) {
+        throw new Error('Nowe haslo glowne musi miec co najmniej 8 znakow.')
+      }
+      if (resetMasterPassword !== resetMasterPasswordRepeat) {
+        throw new Error('Nowe hasla nie sa takie same.')
+      }
+
+      const kdfSalt = bytesToBase64(crypto.getRandomValues(new Uint8Array(16)))
+      const password = await deriveAuthHash(resetMasterPassword, kdfSalt, KDF_ITERATIONS)
+      const text = await requestText(`/auth/forgot-password/changePassword/${encodeURIComponent(normalizedEmail)}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          otp: Number(resetOtp),
+          password,
+          repeatPassword: password,
+          kdfSalt,
+          kdfIterations: KDF_ITERATIONS,
+        }),
+      })
+
+      setUsername('')
+      setResetEmail('')
+      setResetOtp('')
+      setResetOtpVerified(false)
+      setResetMasterPassword('')
+      setResetMasterPasswordRepeat('')
+      setShowForgotPassword(false)
+      setMessage(text)
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Nie udalo sie zresetowac hasla.')
     } finally {
       setIsLoading(false)
     }
@@ -844,56 +964,156 @@ function App() {
 
   return (
     <main className="app-shell">
-      <form className="login-panel" onSubmit={(event) => {
-        event.preventDefault()
-        submitAuth('login')
-      }}>
-        <div>
-          <p className="eyebrow">Bezpieczny menedzer hasel</p>
-          <h1>Odblokuj sejf</h1>
-          <p className="muted">Haslo glowne zostaje w przegladarce. Backend dostaje tylko hash autoryzacyjny.</p>
-        </div>
+      <div className="auth-layout">
+        <form className="login-panel" onSubmit={(event) => {
+          event.preventDefault()
+          submitAuth('login')
+        }}>
+          <div>
+            <p className="eyebrow">Bezpieczny menedzer hasel</p>
+            <h1>Odblokuj sejf</h1>
+            <p className="muted">Haslo glowne zostaje w przegladarce. Backend dostaje tylko hash autoryzacyjny.</p>
+          </div>
 
-        <label>
-          Login
-          <input
-            autoComplete="username"
-            minLength={3}
-            onChange={(event) => setUsername(event.target.value)}
-            required
-            type="text"
-            value={username}
-          />
-        </label>
+          <label>
+            Login
+            <input
+              autoComplete="username"
+              minLength={3}
+              onChange={(event) => setUsername(event.target.value)}
+              required
+              type="text"
+              value={username}
+            />
+          </label>
 
-        <label>
-          Haslo glowne
-          <input
-            autoComplete="current-password"
-            minLength={8}
-            onChange={(event) => setMasterPassword(event.target.value)}
-            required
-            type="password"
-            value={masterPassword}
-          />
-        </label>
+          <label>
+            E-mail do odzyskiwania
+            <input
+              autoComplete="email"
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="wymagany przy tworzeniu konta"
+              type="email"
+              value={email}
+            />
+          </label>
 
-        <div className="actions">
-          <button disabled={isLoading} type="submit">
-            Zaloguj
-          </button>
+          <label>
+            Haslo glowne
+            <input
+              autoComplete="current-password"
+              minLength={8}
+              onChange={(event) => setMasterPassword(event.target.value)}
+              required
+              type="password"
+              value={masterPassword}
+            />
+          </label>
+
+          <div className="actions">
+            <button disabled={isLoading} type="submit">
+              Zaloguj
+            </button>
+            <button
+              className="secondary-button"
+              disabled={isLoading}
+              onClick={() => submitAuth('register')}
+              type="button"
+            >
+              Utworz konto
+            </button>
+          </div>
+
           <button
-            className="secondary-button"
+            className="link-button"
             disabled={isLoading}
-            onClick={() => submitAuth('register')}
+            onClick={() => {
+              setShowForgotPassword((current) => !current)
+              setMessage('')
+            }}
             type="button"
           >
-            Utworz konto
+            Nie pamietasz hasla?
           </button>
-        </div>
 
-        {message && <p className="status">{message}</p>}
-      </form>
+          {message && <p className="status">{message}</p>}
+        </form>
+
+        {showForgotPassword && (
+          <form className="login-panel forgot-panel" onSubmit={sendResetOtp}>
+            <div>
+              <p className="eyebrow">Odzyskiwanie dostepu</p>
+              <h2>Reset hasla</h2>
+              <p className="muted">
+                Po resecie sejf zostanie wyczyszczony, bo starego klucza szyfrujacego nie da sie odzyskac.
+              </p>
+            </div>
+
+            <label>
+              E-mail
+              <input
+                autoComplete="email"
+                onChange={(event) => {
+                  setResetEmail(event.target.value)
+                  setResetOtpVerified(false)
+                }}
+                required
+                type="email"
+                value={resetEmail}
+              />
+            </label>
+
+            <button disabled={isLoading} type="submit">
+              Wyslij kod
+            </button>
+
+            <label>
+              Kod OTP
+              <input
+                inputMode="numeric"
+                maxLength={6}
+                onChange={(event) => {
+                  setResetOtp(event.target.value)
+                  setResetOtpVerified(false)
+                }}
+                pattern="[0-9]{6}"
+                type="text"
+                value={resetOtp}
+              />
+            </label>
+
+            <button className="secondary-button" disabled={isLoading || resetOtp.length !== 6} onClick={verifyResetOtp} type="button">
+              Zweryfikuj kod
+            </button>
+
+            <label>
+              Nowe haslo glowne
+              <input
+                autoComplete="new-password"
+                minLength={8}
+                onChange={(event) => setResetMasterPassword(event.target.value)}
+                type="password"
+                value={resetMasterPassword}
+              />
+            </label>
+
+            <label>
+              Powtorz nowe haslo
+              <input
+                autoComplete="new-password"
+                minLength={8}
+                onChange={(event) => setResetMasterPasswordRepeat(event.target.value)}
+                type="password"
+                value={resetMasterPasswordRepeat}
+              />
+            </label>
+
+            <button disabled={isLoading || !resetOtpVerified} onClick={finishForgotPassword} type="button">
+              Ustaw nowe haslo
+            </button>
+          </form>
+        )}
+      </div>
     </main>
   )
 }

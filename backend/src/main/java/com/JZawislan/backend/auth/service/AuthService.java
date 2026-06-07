@@ -46,6 +46,10 @@ public class AuthService {
 		if (users.existsByUsername(username)) {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken");
 		}
+		String email = request.email().trim().toLowerCase();
+		if (users.existsByEmail(email)) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already taken");
+		}
 		if (request.kdfIterations() < 100_000) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "KDF iterations are too low");
 		}
@@ -53,6 +57,7 @@ public class AuthService {
 		UserRole role = users.existsByRole(UserRole.ADMIN) ? UserRole.USER : UserRole.ADMIN;
 		AppUser user = users.save(new AppUser(
 				username,
+				email,
 				passwordEncoder.encode(request.password()),
 				request.kdfSalt(),
 				request.kdfIterations(),

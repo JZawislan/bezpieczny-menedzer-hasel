@@ -21,8 +21,7 @@ public class AppUser {
 
 	private Integer kdfIterations;
 
-    //TODO
-    @Column(length = 256)
+    @Column(length = 256, unique = true)
     private String email;
 
 	@Enumerated(EnumType.STRING)
@@ -43,12 +42,13 @@ public class AppUser {
 		this.role = UserRole.USER;
 	}
 
-	public AppUser(String username, String passwordHash, String kdfSalt, int kdfIterations) {
-		this(username, passwordHash, kdfSalt, kdfIterations, UserRole.USER);
+	public AppUser(String username, String email, String passwordHash, String kdfSalt, int kdfIterations) {
+		this(username, email, passwordHash, kdfSalt, kdfIterations, UserRole.USER);
 	}
 
-	public AppUser(String username, String passwordHash, String kdfSalt, int kdfIterations, UserRole role) {
+	public AppUser(String username, String email, String passwordHash, String kdfSalt, int kdfIterations, UserRole role) {
 		this.username = username;
+		this.email = email;
 		this.passwordHash = passwordHash;
 		this.kdfSalt = kdfSalt;
 		this.kdfIterations = kdfIterations;
@@ -61,6 +61,10 @@ public class AppUser {
 
 	public String getUsername() {
 		return username;
+	}
+
+	public String getEmail() {
+		return email;
 	}
 
 	public String getPasswordHash() {

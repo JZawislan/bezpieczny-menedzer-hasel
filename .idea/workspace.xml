@@ -4,19 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="daa72093-14c6-4f22-84dc-8bdf322fa9a8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/ForgotPasswordController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/ChangePassword.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/MailBody.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/ForgotPassword.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/ForgotPasswordRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/EmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="daa72093-14c6-4f22-84dc-8bdf322fa9a8" name="Changes" comment="Implement forgot password functionality with email verification and OTP">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/ForgotPasswordController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/ForgotPasswordController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/RegisterRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/AppUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/AppUser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/AppUserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/AppUserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/ForgotPasswordRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/ForgotPasswordRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +24,7 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="5ec8c854-a750-4454-be4a-40e5cb1ce33b" />
+        <option name="activeSessionId" value="d0b195d2-548f-444b-88ee-0f19fb2e0c35" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
@@ -40,6 +38,14 @@
           <session>
             <option name="chatType" value="PANEL" />
             <option name="id" value="bfaa250f-043b-4fed-a5ab-00479449b2c9" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="d0b195d2-548f-444b-88ee-0f19fb2e0c35" />
             <option name="modeId" value="Ask" />
             <option name="modelType" value="builtin_family" />
             <option name="modelValue" value="auto" />
@@ -144,8 +150,17 @@
       <updated>1780675125318</updated>
       <workItem from="1780675126760" duration="52000" />
       <workItem from="1780675181393" duration="2080000" />
-      <workItem from="1780823932207" duration="10350000" />
+      <workItem from="1780823932207" duration="12399000" />
     </task>
+    <task id="LOCAL-00001" summary="Implement forgot password functionality with email verification and OTP">
+      <option name="closed" value="true" />
+      <created>1780844244827</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1780844244827</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -164,6 +179,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Implement forgot password functionality with email verification and OTP" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement forgot password functionality with email verification and OTP" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

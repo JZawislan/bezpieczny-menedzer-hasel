@@ -12,4 +12,6 @@ public interface ForgotPasswordRepository extends JpaRepository<ForgotPassword, 
 
     @Query("select fp from ForgotPassword fp where fp.otp = ?1 and fp.appUser = ?2")
     Optional<ForgotPassword> findByOtpAndAppUser(Integer otp, AppUser appUser);
+
+    void deleteAllByAppUser(AppUser appUser);
 }
