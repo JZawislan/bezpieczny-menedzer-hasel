@@ -4,6 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record ForgotPasswordResetRequest(
+		@NotBlank
+		@Size(min = 5, max = 320)
+		String email,
+
 		Integer otp,
 
 		@NotBlank

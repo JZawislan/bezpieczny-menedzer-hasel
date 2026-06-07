@@ -385,10 +385,11 @@ function App() {
 
       const kdfSalt = bytesToBase64(crypto.getRandomValues(new Uint8Array(16)))
       const password = await deriveAuthHash(resetMasterPassword, kdfSalt, KDF_ITERATIONS)
-      const text = await requestText(`/auth/forgot-password/changePassword/${encodeURIComponent(normalizedEmail)}`, {
+      const text = await requestText(`/auth/forgot-password/changePassword`, {
         method: 'POST',
         body: JSON.stringify({
-          otp: Number(resetOtp),
+          email: normalizedEmail,
+          otp: parseInt(resetOtp.trim(), 10),
           password,
           repeatPassword: password,
           kdfSalt,

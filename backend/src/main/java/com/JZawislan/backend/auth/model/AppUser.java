@@ -28,7 +28,7 @@ public class AppUser {
 	@Column(length = 20)
 	private UserRole role = UserRole.USER;
 
-    @OneToOne(mappedBy = "appUser")
+    @OneToOne(mappedBy = "appUser",cascade = CascadeType.ALL, orphanRemoval = true)
     private ForgotPassword forgotPassword;
 
 	protected AppUser() {
@@ -87,6 +87,14 @@ public class AppUser {
 		this.passwordHash = passwordHash;
 		this.kdfSalt = kdfSalt;
 		this.kdfIterations = kdfIterations;
+	}
+
+	public ForgotPassword getForgotPassword() {
+		return forgotPassword;
+	}
+
+	public void setForgotPassword(ForgotPassword forgotPassword) {
+		this.forgotPassword = forgotPassword;
 	}
 }
 

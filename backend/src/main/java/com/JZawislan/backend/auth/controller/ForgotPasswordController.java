@@ -86,11 +86,10 @@ public class ForgotPasswordController {
 		return ResponseEntity.ok("OTP jest poprawny. Mozesz teraz zresetowac swoje haslo.");
 	}
 
-	@PostMapping("/changePassword/{email}")
+	@PostMapping("/changePassword")
 	@Transactional
 	public ResponseEntity<String> changePasswordHandler(
-			@Valid @RequestBody ForgotPasswordResetRequest request,
-			@PathVariable String email) {
+			@Valid @RequestBody ForgotPasswordResetRequest request) {
 		if (!Objects.equals(request.password(), request.repeatPassword())) {
 			return new ResponseEntity<>("Hasla nie sa takie same!", HttpStatus.BAD_REQUEST);
 		}
@@ -101,16 +100,20 @@ public class ForgotPasswordController {
 			return new ResponseEntity<>("Liczba iteracji KDF jest zbyt niska.", HttpStatus.BAD_REQUEST);
 		}
 
-		AppUser user = userRepository.findByEmail(normalizeEmail(email))
+		AppUser user = userRepository.findByEmail(normalizeEmail(request.email()))
 				.orElseThrow(() -> new UsernameNotFoundException("Wprowadz poprawny adres e-mail"));
 		ForgotPassword forgotPassword = findValidOtp(request.otp(), user);
 		if (forgotPassword == null) {
 			return new ResponseEntity<>("OTP wygaslo!", HttpStatus.EXPECTATION_FAILED);
 		}
+		if (user.getForgotPassword() != null) {
+			user.setForgotPassword(null);
+		}
 
 		vaultEntryRepository.deleteAllByOwner(user);
 		user.resetPassword(passwordEncoder.encode(request.password()), request.kdfSalt(), request.kdfIterations());
-		forgotPasswordRepository.deleteById(forgotPassword.getFpid());
+		userRepository.save(user);
+		forgotPasswordRepository.delete(forgotPassword);
 
 		return ResponseEntity.ok("Haslo zostalo zresetowane. Sejf zostal wyczyszczony, bo starego klucza nie da sie odzyskac.");
 	}
