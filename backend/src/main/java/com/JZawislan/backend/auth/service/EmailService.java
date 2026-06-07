@@ -18,6 +18,7 @@ public class EmailService {
         message.setFrom("noreply.bsk.menedzer@gmail.com");
         message.setSubject(mailBody.subject());
         message.setText(mailBody.text());
+        mailSender.send(message);
     }
 
 }
