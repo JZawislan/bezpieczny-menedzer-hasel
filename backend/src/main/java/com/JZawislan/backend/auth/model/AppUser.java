@@ -1,13 +1,6 @@
 package com.JZawislan.backend.auth.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "app_users")
@@ -28,9 +21,16 @@ public class AppUser {
 
 	private Integer kdfIterations;
 
+    //TODO
+    @Column(length = 256)
+    private String email;
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private UserRole role = UserRole.USER;
+
+    @OneToOne(mappedBy = "appUser")
+    private ForgotPassword forgotPassword;
 
 	protected AppUser() {
 	}

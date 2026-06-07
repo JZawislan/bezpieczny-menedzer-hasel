@@ -4,13 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cdf48b94-d29e-40c0-a5c7-40187bd570d4" name="Changes" comment="created modules and separated functionalities">
+    <list default="true" id="daa72093-14c6-4f22-84dc-8bdf322fa9a8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/ForgotPasswordController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/ChangePassword.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/dto/MailBody.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/ForgotPassword.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/ForgotPasswordRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/AppUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/model/AppUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/AppUserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/JZawislan/backend/auth/repository/AppUserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,36 +26,20 @@
   <component name="CopilotChats">
     <option name="panelChat">
       <chat>
-        <option name="activeSessionId" value="39a4b7e8-2dd2-4d52-b924-278f33771416" />
+        <option name="activeSessionId" value="5ec8c854-a750-4454-be4a-40e5cb1ce33b" />
         <option name="sessions">
           <session>
             <option name="chatType" value="PANEL" />
-            <option name="id" value="3b991df5-75ff-40f2-8106-6c2f4a9785f2" />
-            <option name="modeId" value="Agent" />
-            <option name="modelType" value="builtin_family" />
-            <option name="modelValue" value="auto" />
-            <option name="status" value="Stopped" />
-            <option name="targetType" value="LOCAL" />
-          </session>
-          <session>
-            <option name="chatType" value="PANEL" />
-            <option name="id" value="e4797605-aa18-4414-92ec-3a2f5868e7cd" />
+            <option name="id" value="5ec8c854-a750-4454-be4a-40e5cb1ce33b" />
             <option name="modeId" value="Ask" />
             <option name="modelType" value="builtin_family" />
             <option name="modelValue" value="auto" />
+            <option name="status" value="Completed" />
             <option name="targetType" value="LOCAL" />
           </session>
           <session>
             <option name="chatType" value="PANEL" />
-            <option name="id" value="da287de1-2dbc-4fe9-9437-89fb00aba8bd" />
-            <option name="modeId" value="Agent" />
-            <option name="modelType" value="builtin_family" />
-            <option name="modelValue" value="auto" />
-            <option name="targetType" value="LOCAL" />
-          </session>
-          <session>
-            <option name="chatType" value="PANEL" />
-            <option name="id" value="39a4b7e8-2dd2-4d52-b924-278f33771416" />
+            <option name="id" value="bfaa250f-043b-4fed-a5ab-00479449b2c9" />
             <option name="modeId" value="Ask" />
             <option name="modelType" value="builtin_family" />
             <option name="modelValue" value="auto" />
@@ -62,8 +52,7 @@
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
-      <entry key="_C:/Users/rkacp/IdeaProjects/bezpieczny-menedzer-hasel" value="3EJk3azlcGP1rxSrXmqyIJ13VTz" />
-      <entry key="_C:/Users/rkacp/IdeaProjects/bezpieczny-menedzer-hasel/backend" value="3EitXVHNua53wRmMpFaZMkHIrq8" />
+      <entry key="_C:/Users/rkacp/IdeaProjects/Bezpieczny menedzer hasel" value="3EixK3XZ7TRDHaXwzMdDo01YAWp" />
     </persistenceIdMap>
   </component>
   <component name="CopilotUserSelectedModel">
@@ -72,43 +61,26 @@
       <entry key="chat-panel" value="Auto" />
     </selectedModels>
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="main" />
-      </map>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+        <option value="Record" />
+      </list>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="RESET_MODE" value="HARD" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;KacperRoman&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/JZawislan/bezpieczny-menedzer-hasel.git&quot;,
-    &quot;accountId&quot;: &quot;8dd48233-6cd0-42d8-a2b8-abde663580a3&quot;
-  }
-}</component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
-      </MavenGeneralSettings>
-    </option>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 7,
-  &quot;fromUser&quot;: false
+  &quot;associatedIndex&quot;: 5
 }</component>
-  <component name="ProjectId" id="3EJk3azlcGP1rxSrXmqyIJ13VTz" />
+  <component name="ProjectId" id="3EixK3XZ7TRDHaXwzMdDo01YAWp" />
   <component name="ProjectSessionTemplates">
     <option name="panelTemplate">
       <template>
-        <option name="modeId" value="Agent" />
+        <option name="modeId" value="Ask" />
         <option name="model">
           <model>
             <option name="modelType" value="builtin_family" />
@@ -123,35 +95,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Spring Boot.BackendApplication.executor": "Run",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/rkacp/IdeaProjects/Pizza-net/order-service",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "C:\\Users\\rkacp\\AppData\\Roaming\\JetBrains\\IntelliJIdea2026.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.JZawislan.backend.auth.dto" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="BackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="backend" />
@@ -161,60 +127,43 @@
       </method>
     </configuration>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
+        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-IU-252.26199.169" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="cdf48b94-d29e-40c0-a5c7-40187bd570d4" name="Changes" comment="" />
-      <created>1762252170147</created>
+      <changelist id="daa72093-14c6-4f22-84dc-8bdf322fa9a8" name="Changes" comment="" />
+      <created>1780675125318</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1762252170147</updated>
-      <workItem from="1762252187416" duration="378000" />
-      <workItem from="1779903864081" duration="867000" />
-      <workItem from="1780663986508" duration="4506000" />
-      <workItem from="1780668708734" duration="162000" />
-      <workItem from="1780668981966" duration="1115000" />
-      <workItem from="1780673263035" duration="1028000" />
+      <updated>1780675125318</updated>
+      <workItem from="1780675126760" duration="52000" />
+      <workItem from="1780675181393" duration="2080000" />
+      <workItem from="1780823932207" duration="10350000" />
     </task>
-    <task id="LOCAL-00001" summary="Add admin panel functionality and user role management">
-      <option name="closed" value="true" />
-      <created>1780666606922</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1780666606923</updated>
-    </task>
-    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="testowa" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add admin panel functionality and user role management" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add admin panel functionality and user role management" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
