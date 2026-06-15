@@ -24,6 +24,9 @@ public class AppUser {
     @Column(length = 256, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private UserRole role = UserRole.USER;
@@ -40,6 +43,7 @@ public class AppUser {
 		this.kdfSalt = "";
 		this.kdfIterations = 0;
 		this.role = UserRole.USER;
+		this.emailVerified = false;
 	}
 
 	public AppUser(String username, String email, String passwordHash, String kdfSalt, int kdfIterations) {
@@ -53,6 +57,7 @@ public class AppUser {
 		this.kdfSalt = kdfSalt;
 		this.kdfIterations = kdfIterations;
 		this.role = role;
+		this.emailVerified = false;
 	}
 
 	public Long getId() {
@@ -74,6 +79,7 @@ public class AppUser {
 	public String getKdfSalt() {
 		return kdfSalt;
 	}
+	public boolean isEmailVerified() { return emailVerified; }
 
 	public Integer getKdfIterations() {
 		return kdfIterations;
@@ -88,7 +94,9 @@ public class AppUser {
 		this.kdfSalt = kdfSalt;
 		this.kdfIterations = kdfIterations;
 	}
-
+	public void verifyEmail() {
+		this.emailVerified = true;
+	}
 	public ForgotPassword getForgotPassword() {
 		return forgotPassword;
 	}

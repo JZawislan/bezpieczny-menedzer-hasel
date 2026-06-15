@@ -222,7 +222,8 @@ function App() {
     })
 
     if (!response.ok) {
-      throw new Error('Operacja nie powiodla sie.')
+      const errorText = await response.text()
+      throw new Error(errorText || 'Operacja nie powiodla sie.')
     }
 
     if (response.status === 204) {

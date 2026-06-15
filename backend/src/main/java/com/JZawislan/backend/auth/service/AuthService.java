@@ -55,13 +55,15 @@ public class AuthService {
 		}
 
 		UserRole role = users.existsByRole(UserRole.ADMIN) ? UserRole.USER : UserRole.ADMIN;
-		AppUser user = users.save(new AppUser(
+		AppUser newUser = new AppUser(
 				username,
 				email,
 				passwordEncoder.encode(request.password()),
 				request.kdfSalt(),
 				request.kdfIterations(),
-				role));
+				role);
+		newUser.verifyEmail();
+		AppUser user = users.save(newUser);
 		return toAuthResponse(user);
 	}
 

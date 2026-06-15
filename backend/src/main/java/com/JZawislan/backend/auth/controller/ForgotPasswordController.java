@@ -14,11 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
@@ -56,6 +52,10 @@ public class ForgotPasswordController {
 		AppUser user = userRepository.findByEmail(normalizedEmail)
 				.orElseThrow(() -> new UsernameNotFoundException("Wprowadz poprawny adres e-mail"));
 
+		if (!user.isEmailVerified()) {
+			return new ResponseEntity<>("Adres e-mail nie zostal zweryfikowany przy rejestracji.", HttpStatus.FORBIDDEN);
+		}
+
 		int otp = otpGenerator();
 		MailBody mailBody = MailBody.builder()
 				.to(normalizedEmail)
@@ -78,6 +78,11 @@ public class ForgotPasswordController {
 	public ResponseEntity<String> verifyOtp(@PathVariable Integer otp, @PathVariable String email) {
 		AppUser user = userRepository.findByEmail(normalizeEmail(email))
 				.orElseThrow(() -> new UsernameNotFoundException("Wprowadz poprawny adres e-mail"));
+
+		if (!user.isEmailVerified()) {
+			return new ResponseEntity<>("Adres e-mail nie zostal zweryfikowany przy rejestracji.", HttpStatus.FORBIDDEN);
+		}
+
 		ForgotPassword forgotPassword = findValidOtp(otp, user);
 		if (forgotPassword == null) {
 			return new ResponseEntity<>("OTP wygaslo!", HttpStatus.EXPECTATION_FAILED);
@@ -102,6 +107,11 @@ public class ForgotPasswordController {
 
 		AppUser user = userRepository.findByEmail(normalizeEmail(request.email()))
 				.orElseThrow(() -> new UsernameNotFoundException("Wprowadz poprawny adres e-mail"));
+
+		if (!user.isEmailVerified()) {
+			return new ResponseEntity<>("Adres e-mail nie zostal zweryfikowany przy rejestracji.", HttpStatus.FORBIDDEN);
+		}
+
 		ForgotPassword forgotPassword = findValidOtp(request.otp(), user);
 		if (forgotPassword == null) {
 			return new ResponseEntity<>("OTP wygaslo!", HttpStatus.EXPECTATION_FAILED);
